@@ -1,14 +1,14 @@
 {
-  "name": "@rmp135/sql-ts",
-  "version": "1.13.0",
+  "name": "@lukigarazus/sql-ts",
+  "version": "1.0.0",
   "main": "./dist/index.js",
   "license": "MIT",
   "description": "Generate TypeScript definitions from database schemas.",
   "bin": "./bin/sql-ts",
   "types": "dist/index.d.ts",
-  "repository": "rmp135/sql-ts",
+  "repository": "lukigarazus/sql-ts",
   "author": {
-    "name": "Ryan Poole"
+    "name": "Ryan Poole & Łukasz Karczewski"
   },
   "files": [
     "/dist"
@@ -49,6 +49,7 @@
     }
   },
   "dependencies": {
+    "better-sqlite3": "^7.6.2",
     "change-case": "^4.1.2",
     "handlebars": "^4.7.7",
     "knex": "^1.0.3",

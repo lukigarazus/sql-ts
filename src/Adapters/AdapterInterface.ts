@@ -30,7 +30,12 @@ export interface ColumnDefinition {
   isPrimaryKey: boolean;
   // The schema the enum belongs to. Currently only used for postgres.
   enumSchema?: string;
-  comment: string
+  comment: string;
+  // if the column is a foreign key, this is the name of the column in the foreign table.
+  foreignKeyConfig?: {
+    table: string;
+    column: string;
+  };
 }
 
 /**
@@ -39,10 +44,10 @@ export interface ColumnDefinition {
  * @export
  * @interface EnumDefinition
  */
- export interface EnumDefinition {
+export interface EnumDefinition {
   name: string;
   schema: string;
-  values: {[key: string]: string | number}
+  values: { [key: string]: string | number }
 }
 
 /**
@@ -52,7 +57,7 @@ export interface ColumnDefinition {
  * @interface AdapterInterface
  */
 export interface AdapterInterface {
-  getAllTables (db: Knex, schemas: string[]): Promise<TableDefinition[]>;
-  getAllColumns (db: Knex, config: Config, table: string, schema: string): Promise<ColumnDefinition[]>;
-  getAllEnums (db: Knex, config: Config): Promise<EnumDefinition[]>;
+  getAllTables(db: Knex, schemas: string[]): Promise<TableDefinition[]>;
+  getAllColumns(db: Knex, config: Config, table: string, schema: string): Promise<ColumnDefinition[]>;
+  getAllEnums(db: Knex, config: Config): Promise<EnumDefinition[]>;
 }
