@@ -30,7 +30,9 @@ export default class implements AdapterInterface {
     return (await db.raw(`pragma table_info(${table})`))
       .map((c: SQLiteColumn) => {
         const foreignKeysInThisColumn = foreignKeys.filter(fk => fk.from === c.name)
-        return {
+        // console.log(foreignKeysInThisColumn);
+
+        const res = {
           name: c.name,
           nullable: c.notnull === 0,
           type: (c.type.includes('(') ? c.type.split('(')[0] : c.type).toLowerCase(),
@@ -39,10 +41,16 @@ export default class implements AdapterInterface {
           isPrimaryKey: c.pk !== 0,
           comment: '',
           ...!!foreignKeysInThisColumn[0] && {
-            table: foreignKeysInThisColumn[0].table,
-            column: foreignKeysInThisColumn[0].to,
+            foreignKeyConfig: {
+              table: foreignKeysInThisColumn[0].table,
+              column: foreignKeysInThisColumn[0].to,
+            }
           }
         } as ColumnDefinition
+        // console.log(res);
+
+
+        return res
       }
       )
   }

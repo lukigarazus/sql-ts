@@ -16,14 +16,15 @@ import * as SchemaTasks from './SchemaTasks'
  * @param {Config} config The configuration to use.
  * @returns {Promise<Column[]>} 
  */
-export async function getColumnsForTable (db: Knex, table: TableDefinition, config: Config): Promise<Column[]> {
+export async function getColumnsForTable(db: Knex, table: TableDefinition, config: Config): Promise<Column[]> {
   const adapter = AdapterFactory.buildAdapter(db.client.dialect)
   const columns = await adapter.getAllColumns(db, config, table.name, table.schema)
   columns.sort((a, b) => a.name.localeCompare(b.name))
+  // console.log(columns)
   return columns.map(c => (
     {
       ...c,
-      propertyName: SharedTasks.convertCase(c.name.replace(/ /g,''), config.columnNameCasing),
+      propertyName: SharedTasks.convertCase(c.name.replace(/ /g, ''), config.columnNameCasing),
       propertyType: convertType(c, table, config, (db.client as Knex.Client).dialect),
       optional: getOptionality(c, table, config)
     } as Column))
@@ -37,7 +38,7 @@ export async function getColumnsForTable (db: Knex, table: TableDefinition, conf
  * @param {Config} config The configuration object.
  * @returns {boolean} The optionality of the specified column.
  */
-export function getOptionality (column: ColumnDefinition, table: TableDefinition, config: Config): boolean {
+export function getOptionality(column: ColumnDefinition, table: TableDefinition, config: Config): boolean {
   let optionality = config.globalOptionality
   const columnName = generateFullColumnName(table.name, table.schema, column.name)
   if (config.columnOptionality[columnName]) {
@@ -61,9 +62,9 @@ export function getOptionality (column: ColumnDefinition, table: TableDefinition
  * @param {string} columnName The name of the column.
  * @returns {string} The full table name.
  */
-export function generateFullColumnName (tableName: string, schemaName: string, columnName: string): string {
+export function generateFullColumnName(tableName: string, schemaName: string, columnName: string): string {
   let result = tableName
-  if  (schemaName != null && schemaName !== '') {
+  if (schemaName != null && schemaName !== '') {
     result = `${schemaName}.${result}`
   }
   return `${result}.${columnName}`
@@ -78,16 +79,16 @@ export function generateFullColumnName (tableName: string, schemaName: string, c
  * @param {Config} config The configuration object.
  * @returns {string}
  */
- export function convertType (column: ColumnDefinition, table: TableDefinition, config: Config, dialect: string): string {
+export function convertType(column: ColumnDefinition, table: TableDefinition, config: Config, dialect: string): string {
   if (column.isEnum) {
     return convertEnumType(column, config)
   }
   const fullname = generateFullColumnName(table.name, table.schema, column.name)
-  
+
   let convertedType = null
   const overrides = config.typeOverrides
   const userTypeMap = config.typeMap
-  
+
   // Start with user config overrides.
   convertedType = overrides[fullname]
   // Then check the user config typemap.
@@ -103,7 +104,7 @@ export function generateFullColumnName (tableName: string, schemaName: string, c
       convertedType = Object.keys(perDBTypeMap).find(f => perDBTypeMap[f].includes(column.type))
     }
   }
-  
+
   // Then the global type map.
   if (convertedType == null) {
     let globalMap = TypeMap['global']
@@ -122,7 +123,7 @@ export function generateFullColumnName (tableName: string, schemaName: string, c
  * @param {Config} config The configuration object.
  * @returns {string}
  */
-export function convertEnumType (column:  ColumnDefinition, config: Config): string {
+export function convertEnumType(column: ColumnDefinition, config: Config): string {
   const enumName = EnumTasks.generateEnumName(column.type, config)
   if (column.enumSchema != null && config.schemaAsNamespace) {
     const schemaName = SchemaTasks.generateSchemaName(column.enumSchema)
